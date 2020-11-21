@@ -1,0 +1,18 @@
+{% extends 'blog/base.html'%}
+
+{%block title%} Search Blogs {%endblock%}
+
+{%block body%}
+    <p class= "mt-3">This is the search blog page</p>
+    <br><br>
+
+    {% if searchBlogs.count %}
+        {% for blog in searchBlogs %}
+            <a href="{% url 'viewBlog' blog.pk %}"> <strong>{{blog.title}}</strong> </a>
+            <p>{{blog.description|truncatechars:60}}</p>
+            <p>{{blog.pk}}</p>
+        {% endfor %}
+    {% else %}
+        <h3 class='font-weight-lighter'>No matching blogs :( </h3>
+    {%endif%}
+{%endblock%}

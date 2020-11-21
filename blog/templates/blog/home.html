@@ -1,0 +1,21 @@
+{% extends 'blog/base.html'%}
+
+{%block title%} Home {%endblock%}
+
+{%block body%}
+    <p>This is the home page</p>
+
+    {% if allBlogs.count %}
+        {% for blog in allBlogs %}
+            <a href="{% url 'viewBlog' blog.pk %}"> <strong>{{blog.title}}</strong> </a>
+            <p>{{blog.description|truncatechars:60}}</p>
+            <!--<p>{{blog.pk}}</p>-->
+            <p class="font-weight-light">By: {{blog.user}}</p>
+            <p class="font-weight-light">{{blog.dateCreated}}</p>
+            <hr>
+        {% endfor %}
+    {% else %}
+        <h3 class='font-weight-lighter'>There is no blog to show you at the moment :'(</h3>
+    {%endif%}
+
+{%endblock%}

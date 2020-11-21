@@ -1,0 +1,21 @@
+{% extends 'blog/base.html'%}
+
+{%block title%} Blogs {%endblock%}
+
+{%block body%}
+    <p class= "mt-3">This is the blog page of {{user.username}}</p>
+    <a href= "{% url 'addNewBlog' %}" class="btn btn-info">&plus; Add blog</a>
+    <br><br>
+
+    {% if blogs.count %}
+        {% for blog in blogs %}
+            <a href="{% url 'viewBlog' blog.pk %}"> <strong>{{blog.title}}</strong> </a>
+            <p>{{blog.description|truncatechars:60}}</p>
+            <p class="font-weight-light mt-2">{{blog.dateCreated}}</p>
+            <hr>
+            
+        {% endfor %}
+    {% else %}
+        <h3 class='font-weight-lighter'>Opps..You have not written any blog :(</h3>
+    {%endif%}
+{%endblock%}

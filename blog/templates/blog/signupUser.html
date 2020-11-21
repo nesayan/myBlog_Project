@@ -1,0 +1,39 @@
+{%extends 'blog/base.html'%}
+
+{%block title%}Signup User {%endblock%}
+
+{%block body%}
+ 
+    <!-- Default form login -->
+    <form class="text-center border border-light my-4 p-5 col-md-5 offset-lg-3" method="POST">
+        {% csrf_token %}
+        <p class="h4 mb-4">Sign Up</p>
+
+        <!-- Email -->
+        <input type="text" id="uName" name= "username" class="form-control mb-4" placeholder="Username">
+
+        <!-- Password -->
+        <input type="password" id="password1" name= "password1" class="form-control mb-4" placeholder="Password">
+        <!-- Confirm Password -->
+        <input type="password" id="password2" name= "password2" class="form-control mb-4" placeholder="Confirm Password">
+
+        <div class="d-flex justify-content-around">
+            <div>
+                <!-- Remember me -->
+                <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="rememberMe">
+                    <label class="custom-control-label" for="rememberMe">Remember me</label>
+                </div>
+            </div>
+            <div>
+                <!-- Forgot password -->
+                <a href="">Forgot password?</a>
+            </div>
+        </div>
+
+        <!-- Sign in button -->
+        <button class="btn btn-info btn-block my-4" type="submit">Sign Up</button>
+
+    </form>
+    <!-- Default form login -->
+{%endblock%}
