@@ -4,6 +4,10 @@
 
 {% block body %}
 
+    {% load humanize %}
+    {% load static %}
+    {% load extras %}
+
     {% if user.is_authenticated %}
     <p class= "mt-3">This is the view blog page of {{user.username}}</p>
     {% endif %}
@@ -15,14 +19,18 @@
     </div>
 
 
-    <!-- Default edit blog post form -->
+    <!-- Default delete blog post form -->
     {% if user.is_authenticated and user == blog.user %}
 
     <form action="{% url 'deleteBlog' blog.pk %}" method="POST">
         {% csrf_token %}
         <button class="btn btn-danger btn-block my-4 col-md-2" type="submit">Delete blog</button>
     </form>
-    
+    {% endif %}
+
+
+    {% if user.is_authenticated and user == blog.user %}
+    <!-- Default edit blog post form -->
     <h3 class='font-weight-lighter mb-5'>Edit your blog here</h3>
     <form method="POST">
         {% csrf_token %}
@@ -47,6 +55,84 @@
     </form>
 
     {% endif %}
-    <!-- Default edit blog post form -->
-    
+
+    {% if user.is_authenticated%}
+    <!-- Default post comment form -->
+        <form action= "{% url 'postComment'%}" method= "POST">
+        {% csrf_token %}
+            <div class="form-group row">
+                <label for="comment" class="col-md-12 col-form-label">Post a Comment</label>
+                <div class="col-md-6">
+                    <input type="hidden" name= "commentBlogID" value= "{{blog.pk}}">
+                    <input type="hidden" name= "commentParent" value= "">
+                    <input type="text" name= "comment" class="form-control" id="comment" placeholder="Your comment" required>
+                </div>
+            </div>
+            <!-- Post a comment button -->
+            <button type="submit" class="btn btn-primary btn-sm mb-3">Comment</button>
+        </form>
+    {% else %}
+        <div class="form-group row">
+            <h4 class="col-sm-12 font-weight-lighter">Please login to post a comment</h4>
+        </div>
+    {% endif %}
+
+    <!-- Default display posted comments section -->
+    <h3 class='font-weight-lighter mb-3'>Comments ({{blogComments.count}})</h3>
+    {% if blogComments.count %}
+        {% for comment in blogComments %}
+            <div class="row my-3">
+                <div class="col-md-1">
+                    <img src="{% static 'blog/user.png'%}" class= "rounded mx-auto d-block w-50" alt="user_logo">
+                </div>
+                <div class="col-md-11 px-0">
+                    <strong class= "h6">{{comment.user}}</strong> <span class= "h6 font-weight-lighter">{{comment.dateCreated|naturaltime}}</span>
+                    <p class= "my-0">{{comment.description}}</p>
+
+                    <!-- Default display posted replies to a comment -->
+                    {% for reply in commentToReplies|getReplies:comment.pk %}
+                        <div class="row my-3">
+                            <div class="col-md-1">
+                                <img src="{% static 'blog/user.png'%}" class= "rounded mx-auto d-block w-50" alt="user_logo">
+                            </div>
+                            <div class="col-md-11 px-0">
+                                <strong class= "h6">{{reply.user}}</strong> <span class= "h6 font-weight-lighter">{{reply.dateCreated|naturaltime}}</span>
+                                <p class= "my-0">{{reply.description}}</p>
+                            </div>
+                        </div>
+                    {% endfor %}
+
+                    <!-- Default post reply form -->
+                    {% if user.is_authenticated %}
+                    <div class= "">
+                        <a data-toggle="collapse" href="#replyLink{{comment.pk}}" aria-expanded="false" aria-controls="replyLink{{comment.pk}}">
+                            Reply
+                        </a>
+                        <div class="collapse" id="replyLink{{comment.pk}}">
+                            <form action= "{% url 'postComment'%}" method= "POST">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="border border-light col-md-6">
+                                    <input type="hidden" name= "commentBlogID" value= "{{blog.pk}}">
+                                    <input type="hidden" name= "commentParent" value= "{{comment.pk}}">
+                                    <input type="text" name= "comment" class="form-control" placeholder="Your reply" required>
+                                </div>
+                                <!-- Post a reply button -->
+                                <div class= "col-md-1 p-0 my-1">
+                                    <button type="submit" class="btn btn-primary btn-sm">Reply</button>
+                                </div>
+                            </div>
+                            </form>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                </div>
+
+            </div>
+        {% endfor %}
+
+    {% else %}
+        <p>No comments to show</p>
+    {% endif %}
 {% endblock %}

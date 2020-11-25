@@ -5,7 +5,7 @@ from django.db import IntegrityError
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from .models import BLOG
+from .models import BLOG, COMMENT
 import datetime
 
 
@@ -94,19 +94,29 @@ def addNewBlog(request):
 #@login_required(login_url= 'loginUser')
 def viewBlog(request, blog_pk):
     blog = get_object_or_404(BLOG, pk= blog_pk)#, user= request.user)
+    blogComments = COMMENT.objects.filter(post= blog, parent= None)
+    blogReplies = COMMENT.objects.filter(post= blog).exclude(parent= None)
+
+    #making a dict where key= parent comment pk, value = list of all replies to that comment 
+    commentToReplies = {}
+    for x in blogReplies:
+        if x.parent.pk not in commentToReplies.keys():
+            commentToReplies[x.parent.pk] = [x]
+        else:
+            commentToReplies[x.parent.pk].append(x)
+    
     if request.method == 'GET':
-        return render(request, 'blog/viewBlog.html', {'blog': blog})
+        return render(request, 'blog/viewBlog.html', {'blog': blog, 'blogComments': blogComments, 'commentToReplies': commentToReplies})
     else:
         try:
             newTitle = request.POST['title']
             newDescription = request.POST['description']
-            newDateTime = datetime.datetime.now()
             editBlog = BLOG.objects.filter(pk= blog_pk, user= request.user)
             editBlog.update(title = newTitle, description= newDescription,  user= request.user)
             return redirect('blogs')
         except ValueError:
             messages.error(request, 'Bad value entered')
-            return render(request, 'blog/viewBlog.html', {'blog': blog})
+            return render(request, 'blog/viewBlog.html', {'blog': blog, 'allComments': allComments, 'commentToReplies': commentToReplies})
     
 # function for delete blog
 def deleteBlog(request, blog_pk):
@@ -122,3 +132,19 @@ def search(request):
     searchValue = request.GET.get('search')
     searchBlogs = BLOG.objects.filter(title__contains= searchValue)
     return render(request, 'blog/search.html', {'searchBlogs':searchBlogs})
+
+def postComment(request):
+    if request.method == 'POST':
+        description = request.POST['comment']
+        post = BLOG.objects.filter(pk= request.POST['commentBlogID']).first()
+        if request.POST['commentParent'] == "":
+            newComment = COMMENT(description= description, user= request.user, post= post, parent= None)
+            newComment.save()
+            return redirect('blogs')
+        else:
+            parent = COMMENT.objects.filter(pk= request.POST['commentParent']).first()
+            newComment = COMMENT(description= description, user= request.user, post= post, parent= parent)
+            newComment.save()
+            return redirect('blogs')
+    else:
+        HttpResponse("Lalala")
