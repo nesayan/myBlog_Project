@@ -91,58 +91,55 @@
                     <div class="col-md-12">
                     {% if blogComments.count %}
                         {% for comment in blogComments %}
-                        <div class="media mt-3"> <img class="mr-3 rounded-circle" alt="Bootstrap Media Preview" src="{% static 'blog/img/user.png'%}">
-                            <div class="media-body">
-                                <div class="row">
-                                    <div class="col-8 d-flex">
-                                        <h5>{{ comment.user }}</h5> <span>- {{comment.dateCreated|naturaltime}}</span>
+                            <div class="media mt-3"> <img class="mr-3 rounded-circle" alt="Bootstrap Media Preview" src="{% static 'blog/img/user.png'%}">
+                                <div class="media-body">
+                                    <div class="row">
+                                        <div class="col-8 d-flex">
+                                            <h5>{{ comment.user }}</h5> <span>- {{comment.dateCreated|naturaltime}}</span>
+                                        </div> 
                                     </div>
-                                    
-                                </div>
-                                {{comment.description}}
-                                {% for reply in commentToReplies|getReplies:comment.pk %}
-                                <div class="media mt-4"><img class="mr-3 rounded-circle" alt="User_image" src="{% static 'blog/img/user.png'%}">
-                                    <div class="media-body">
-                                        <div class="row">
-                                            <div class="col-12 d-flex">
-                                                <h5>{{reply.user}}</h5> <span>- {{reply.dateCreated|naturaltime}}</span>
+                                    {{comment.description}}
+                                    {% for reply in commentToReplies|getReplies:comment.pk %}
+                                    <div class="media mt-4"><img class="mr-3 rounded-circle" alt="User_image" src="{% static 'blog/img/user.png'%}">
+                                        <div class="media-body">
+                                            <div class="row">
+                                                <div class="col-12 d-flex">
+                                                    <h5>{{reply.user}}</h5> <span>- {{reply.dateCreated|naturaltime}}</span>
+                                                </div>
                                             </div>
+                                            {{reply.description}}
                                         </div>
-                                        {{reply.description}}
                                     </div>
-                                </div>
-                                {% endfor %}
+                                    {% endfor %}
 
-                            </div>
-                        </div>
-
-                    <!-- Default post reply form -->
-                    {% if user.is_authenticated %}
-                    <div>
-                        <a data-toggle="collapse" href="#replyLink{{comment.pk}}" aria-expanded="false" aria-controls="replyLink{{comment.pk}}">
-                           <span><i class="fa fa-reply"></i> Reply</span>
-                        </a>
-                        <div class="collapse mt-2" id="replyLink{{comment.pk}}">
-                            <form action= "{% url 'postComment'%}" method= "POST">
-                            {% csrf_token %}
-                            <div class="row">
-                                <div class="border border-light col-md-6">
-                                    <input type="hidden" name= "commentBlogID" value= "{{blog.pk}}">
-                                    <input type="hidden" name= "commentParent" value= "{{comment.pk}}">
-                                    <input type="text" name= "comment" class="form-control" placeholder="Your reply" required>
-                                </div>
-                                <!-- Post a reply button -->
-                                <div class= "col-md-1 p-0 my-1">
-                                    <button type="submit" class="btn btn-primary btn-sm">Reply</button>
                                 </div>
                             </div>
-                            </form>
-                        </div>
-                    </div>
-                    {% endif %}
 
-
-
+                            <!-- Default post reply form -->
+                            {% if user.is_authenticated %}
+                            <div>
+                                <a data-toggle="collapse" href="#replyLink{{comment.pk}}" aria-expanded="false" aria-controls="replyLink{{comment.pk}}">
+                                <span><i class="fa fa-reply"></i> Reply</span>
+                                </a>
+                                <div class="collapse mt-2" id="replyLink{{comment.pk}}">
+                                    <form action= "{% url 'postComment'%}" method= "POST">
+                                    {% csrf_token %}
+                                    <div class="row">
+                                        <div class="border border-light col-md-6">
+                                            <input type="hidden" name= "commentBlogID" value= "{{blog.pk}}">
+                                            <input type="hidden" name= "commentParent" value= "{{comment.pk}}">
+                                            <input type="text" name= "comment" class="form-control" placeholder="Your reply" required>
+                                        </div>
+                                        <!-- Post a reply button -->
+                                        <div class= "col-md-1 my-1">
+                                            <button type="submit" class="btn btn-primary btn-sm">Reply</button>
+                                        </div>
+                                    </div>
+                                    </form>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
                         {% endfor %}
                     {% else %}
                         No comments to show
