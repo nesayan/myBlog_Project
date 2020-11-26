@@ -140,11 +140,12 @@ def postComment(request):
         if request.POST['commentParent'] == "":
             newComment = COMMENT(description= description, user= request.user, post= post, parent= None)
             newComment.save()
-            return redirect('blogs')
+            return redirect('viewBlog', request.POST['commentBlogID'])
         else:
             parent = COMMENT.objects.filter(pk= request.POST['commentParent']).first()
             newComment = COMMENT(description= description, user= request.user, post= post, parent= parent)
             newComment.save()
-            return redirect('blogs')
+            return redirect('viewBlog', request.POST['commentBlogID'])
     else:
-        HttpResponse("Lalala")
+        HttpResponse("Not allowed")
+

@@ -2,6 +2,11 @@
 
 {%block title%} View blog {%endblock%}
 
+{% block customcss %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'blog/css/commentSection.css' %}">
+{% endblock customcss %}
+
 {% block body %}
 
     {% load humanize %}
@@ -43,7 +48,7 @@
             </div>
         </div>
         <div class="form-group row my-4">
-            <label for="desc" class= "col-md-2 col-form-label">Description</label>
+            <label for="desc" class= "col-sm-2 col-form-label">Description</label>
             <div class="col-sm-10">
                 <textarea name= "description" class="form-control" id="desc" rows="3" placeholder= "Description">{{blog.description}}</textarea>
             </div>
@@ -78,37 +83,46 @@
     {% endif %}
 
     <!-- Default display posted comments section -->
-    <h3 class='font-weight-lighter mb-3'>Comments ({{blogComments.count}})</h3>
-    {% if blogComments.count %}
-        {% for comment in blogComments %}
-            <div class="row my-3">
-                <div class="col-md-1">
-                    <img src="{% static 'blog/user.png'%}" class= "rounded mx-auto d-block w-50" alt="user_logo">
-                </div>
-                <div class="col-md-11 px-0">
-                    <strong class= "h6">{{comment.user}}</strong> <span class= "h6 font-weight-lighter">{{comment.dateCreated|naturaltime}}</span>
-                    <p class= "my-0">{{comment.description}}</p>
+    <h3 class='font-weight-lighter'>Comments ({{blogComments.count}})</h3>
+    <div class="mb-5 mt-3">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-12">
+                    {% if blogComments.count %}
+                        {% for comment in blogComments %}
+                        <div class="media mt-3"> <img class="mr-3 rounded-circle" alt="Bootstrap Media Preview" src="{% static 'blog/img/user.png'%}">
+                            <div class="media-body">
+                                <div class="row">
+                                    <div class="col-8 d-flex">
+                                        <h5>{{ comment.user }}</h5> <span>- {{comment.dateCreated|naturaltime}}</span>
+                                    </div>
+                                    
+                                </div>
+                                {{comment.description}}
+                                {% for reply in commentToReplies|getReplies:comment.pk %}
+                                <div class="media mt-4"><img class="mr-3 rounded-circle" alt="User_image" src="{% static 'blog/img/user.png'%}">
+                                    <div class="media-body">
+                                        <div class="row">
+                                            <div class="col-12 d-flex">
+                                                <h5>{{reply.user}}</h5> <span>- {{reply.dateCreated|naturaltime}}</span>
+                                            </div>
+                                        </div>
+                                        {{reply.description}}
+                                    </div>
+                                </div>
+                                {% endfor %}
 
-                    <!-- Default display posted replies to a comment -->
-                    {% for reply in commentToReplies|getReplies:comment.pk %}
-                        <div class="row my-3">
-                            <div class="col-md-1">
-                                <img src="{% static 'blog/user.png'%}" class= "rounded mx-auto d-block w-50" alt="user_logo">
-                            </div>
-                            <div class="col-md-11 px-0">
-                                <strong class= "h6">{{reply.user}}</strong> <span class= "h6 font-weight-lighter">{{reply.dateCreated|naturaltime}}</span>
-                                <p class= "my-0">{{reply.description}}</p>
                             </div>
                         </div>
-                    {% endfor %}
 
                     <!-- Default post reply form -->
                     {% if user.is_authenticated %}
-                    <div class= "">
+                    <div>
                         <a data-toggle="collapse" href="#replyLink{{comment.pk}}" aria-expanded="false" aria-controls="replyLink{{comment.pk}}">
-                            Reply
+                           <span><i class="fa fa-reply"></i> Reply</span>
                         </a>
-                        <div class="collapse" id="replyLink{{comment.pk}}">
+                        <div class="collapse mt-2" id="replyLink{{comment.pk}}">
                             <form action= "{% url 'postComment'%}" method= "POST">
                             {% csrf_token %}
                             <div class="row">
@@ -126,13 +140,16 @@
                         </div>
                     </div>
                     {% endif %}
-                    
+
+
+
+                        {% endfor %}
+                    {% else %}
+                        No comments to show
+                    {% endif %}
+                    </div>
                 </div>
-
             </div>
-        {% endfor %}
-
-    {% else %}
-        <p>No comments to show</p>
-    {% endif %}
+        </div>
+    </div>
 {% endblock %}

@@ -29,4 +29,5 @@ urlpatterns = [
     path('deleteBlog/<int:blog_pk>', views.deleteBlog, name='deleteBlog'),
     path('search/', views.search, name='search'),
     path('postComment/', views.postComment, name='postComment'),
+
 ]
