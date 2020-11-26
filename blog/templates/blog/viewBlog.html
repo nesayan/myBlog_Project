@@ -89,6 +89,7 @@
             <div class="col-md-12">
                 <div class="row">
                     <div class="col-md-12">
+                    <!-- If there is comment, iterate over all comments -->
                     {% if blogComments.count %}
                         {% for comment in blogComments %}
                             <div class="media mt-3"> <img class="mr-3 rounded-circle" alt="Bootstrap Media Preview" src="{% static 'blog/img/user.png'%}">
@@ -99,6 +100,7 @@
                                         </div> 
                                     </div>
                                     {{comment.description}}
+                                    <!-- If reply is present, iterate over all reply of particular comment -->
                                     {% for reply in commentToReplies|getReplies:comment.pk %}
                                     <div class="media mt-4"><img class="mr-3 rounded-circle" alt="User_image" src="{% static 'blog/img/user.png'%}">
                                         <div class="media-body">
